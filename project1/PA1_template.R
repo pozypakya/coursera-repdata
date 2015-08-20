@@ -8,6 +8,7 @@ if (is.installed('scales') == 'FALSE') {install.packages("scales")} else{library
 if (is.installed('RColorBrewer') == 'FALSE') {install.packages("RColorBrewer")} else{library(RColorBrewer)}
 if (is.installed('lubridate') == 'FALSE') {install.packages("lubridate")} else{library(lubridate)}
 if (is.installed('ggplot2') == 'FALSE') {install.packages("ggplot2")} else{library(ggplot2)}
+if (is.installed('plyr') == 'FALSE') {install.packages("plyr")} else{library(plyr)}
 
 
 ## Loading and preprocessing the data
@@ -20,74 +21,26 @@ unzip(paste(curdir,'/repdata%2Fdata%2Factivity.zip',sep=""),exdir=paste(curdir,s
 
 ## ---------Loading and preprocessing the data--------------------------
 data <- read.csv(paste(curdir,'/activity.csv',sep=""))
+## ---------Ignore missing value--------------------------
+data <- subset(data, is.na(data$steps) == F)
+totalPerDay <- ddply(data, .(date), summarise, steps=sum(steps))
 
 
+## ---------Plot /  Make a histogram of the total number of steps taken each day--------------------------
+hist(totalPerDay$steps , main="Number of Steps", 
+     xlab="Total number of steps taken each day", ylab = "Number of Days")
+
+## ---------Calculate and report the mean and median of the total number of steps taken per day--------------------------
+# mean
+mean(totalPerDay$steps)
+# median
+median(totalPerDay$steps)	 
+	 
+	 
 ## ---------What is mean total number of steps taken per day?--------------------------
 data$date<-as.Date(data$date)
 data$Weekday<-wday(data$date, label = TRUE, abbr = FALSE)
 
-
-
-make.sums.ggplot<- function(data.dataframe, RBrewers.colors = "Greens"){
-  
-  #Transmform the data and get averages.
-
-  #Sum up steps of the data.frame, grouped by date
-  data.sums <- data.dataframe %>%
-    group_by(date, Weekday) %>%
-    summarise(total_steps = sum(steps))
-  
-  # Create a vector of brewer greens for representing the ordinal change from Monday to Sunday.
-  # Brewer.pal takes an integer (n) and an RBrewer color set. 
-  # It then creates (n) gradients of color that cover the passed in color set. 
-  # 7 is passed in because there are 7 factors: each day of the week.
-  my.cols <- brewer.pal(7, RBrewers.colors)
-  # Ordered factors start on Sunday. Rather than reordering the date factor variables, we can just reassign the color for Saturday to Sunday as well. This will make the Weekends stand out.
-  my.cols[1] <- my.cols[7]
-  # Get max number of steps for largest interval for extending y-axis to fit labels.
-  max.sum <- max(data.sums$total_steps, na.rm = TRUE)
-  
-  ggplot(data.sums, aes(x = date, y = total_steps, fill = Weekday)) + geom_bar(stat = "identity") +
-    scale_x_date(breaks="1 day", 
-                 limits = as.Date(c('2012-10-03','2012-11-28'))) +
-    theme_wsj() +    
-    theme(axis.text.x  = element_text(size=10,
-                                      angle=45,
-                                      colour="black",
-                                      vjust=1,
-                                      hjust=1)) + 
-    scale_fill_manual(values = my.cols) + 
-    geom_text(aes(x = date, 
-                  y = total_steps, 
-                  label = total_steps, 
-                  angle  = 90, 
-                  size = 5, 
-                  hjust = -0.1), 
-              color = "brown", 
-              show_guide  = F) + 
-    coord_cartesian(ylim=c(0,max.sum*1.15)) +
-    geom_hline(aes ( yintercept = mean(total_steps, na.rm = TRUE)), 
-               color = "chocolate3", 
-               size = 1.5, 
-               alpha = .50) + 
-    geom_hline(aes ( yintercept = median(total_steps, na.rm = TRUE)), 
-               color = "darkred", 
-               alpha = .50) +
-    geom_text(aes(label = paste("Overall Mean =", round(mean(total_steps, na.rm = TRUE), 2) ),
-                  x = as.Date('2012-10-05'),
-                  y = 20200), 
-              color = "chocolate3", 
-              size = 4) +
-    geom_text(aes(label = paste("Overall Median = ", round(median(total_steps, na.rm = TRUE), 2) ),
-                  x = as.Date('2012-10-05'),
-                  y = 19700),
-              color = "darkred",
-              size = 4) +
-    ylab("Total Steps taken per day") +
-    xlab(NULL)
-}
-
-make.sums.ggplot(data, "Blues")
   
   
 ## ---------What is mean total number of steps taken per day?--------------------------
@@ -104,6 +57,8 @@ hist(total.steps)
 
 
 
+## --------What is the average daily activity pattern?--------------------------
+#Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
 
