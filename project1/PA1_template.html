@@ -203,7 +203,10 @@ hr {
 <body>
 <h1>Reproducible Research: Peer Assessment 1</h1>
 
-<p>##load all the libraries</p>
+<h2>load all the libraries</h2>
+
+<p>.plot of chunk unnamed-chunk-1
+image::D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/figure/unnamed-chunk-1-1.png[plot of chunk unnamed-chunk-1,align=default]</p>
 
 <pre><code class="r">is.installed &lt;- function(mypkg) is.element(mypkg, installed.packages()[,1]) 
 if (is.installed(&#39;dplyr&#39;) == &#39;FALSE&#39;) {install.packages(&quot;dplyr&quot;)} else{library(dplyr)}
@@ -214,11 +217,13 @@ if (is.installed(&#39;lubridate&#39;) == &#39;FALSE&#39;) {install.packages(&quo
 if (is.installed(&#39;ggplot2&#39;) == &#39;FALSE&#39;) {install.packages(&quot;ggplot2&quot;)} else{library(ggplot2)}
 if (is.installed(&#39;plyr&#39;) == &#39;FALSE&#39;) {install.packages(&quot;plyr&quot;)} else{library(plyr)}
 if (is.installed(&#39;knitr&#39;) == &#39;FALSE&#39;) {install.packages(&quot;knitr&quot;)} else{library(knitr)}
+if (is.installed(&#39;lattice&#39;) == &#39;FALSE&#39;) {install.packages(&quot;lattice&quot;)} else{library(lattice)}
+
 </code></pre>
 
 <h2>Loading and preprocessing the data</h2>
 
-<h1>set working directory</h1>
+<h2>set working directory</h2>
 
 <pre><code class="r">curdir &lt;-getwd()
 file.url&lt;-&#39;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&#39;
@@ -231,7 +236,7 @@ unzip(paste(curdir,&#39;/repdata%2Fdata%2Factivity.zip&#39;,sep=&quot;&quot;),ex
 <pre><code class="r">data &lt;- read.csv(paste(curdir,&#39;/activity.csv&#39;,sep=&quot;&quot;))
 </code></pre>
 
-<p>##Ignore missing value</p>
+<h2>Ignore missing value</h2>
 
 <pre><code class="r">dataClean &lt;- subset(data, is.na(data$steps) == F)
 totalPerDay &lt;- ddply(dataClean, .(date), summarise, steps=sum(steps))
@@ -241,22 +246,110 @@ totalPerDay &lt;- ddply(dataClean, .(date), summarise, steps=sum(steps))
 
 <pre><code class="r">if(&quot;figure&quot;%in%dir()==FALSE) dir.create(&quot;figure&quot;)
 png(filename=paste(curdir,&#39;/figure/unnamed-chunk-1.png&#39;,sep=&quot;&quot;),width=480,height=480,units=&#39;px&#39;)
-h &lt;- hist(totalPerDay$steps , breaks = 20, main=&quot;Number of Steps&quot;, 
+h1 &lt;- hist(totalPerDay$steps , breaks = 20, main=&quot;Number of Steps&quot;, 
      xlab=&quot;Total number of steps taken each day&quot;, ylab = &quot;Number of Days&quot;,col=&quot;red&quot;)
-print(h)
+print(h1)
 graphics.off()
 </code></pre>
 
 <h2>Calculate and report the mean and median of the total number of steps taken per day</h2>
 
-<h1>mean</h1>
+<h2>mean</h2>
 
 <pre><code class="r">mean(totalPerDay$steps)
 </code></pre>
 
-<h1>median</h1>
+<h2>median</h2>
 
-<pre><code class="r">medi
+<pre><code class="r">median(totalPerDay$steps)    
+</code></pre>
+
+<h2>What is the average daily activity pattern?</h2>
+
+<h2>Make a time series plot (i.e. type = &ldquo;l&rdquo;) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)</h2>
+
+<pre><code class="r">averagePerInterval &lt;- ddply(dataClean, .(interval), summarise, steps=mean(steps))
+</code></pre>
+
+<h2>Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?</h2>
+
+<pre><code class="r">if(&quot;figure&quot;%in%dir()==FALSE) dir.create(&quot;figure&quot;)
+png(filename=paste(curdir,&#39;/figure/unnamed-chunk-2.png&#39;,sep=&quot;&quot;),width=480,height=480,units=&#39;px&#39;)
+h2 &lt;- plot(averagePerInterval$interval, averagePerInterval$steps,axes = F, type=&quot;l&quot;, col=&quot;red&quot;, xlab=&quot;Time&quot;, ylab=&quot;Average Number of Steps&quot;,
+     main=&quot;Average Daily Activity Pattern&quot;)
+axis(1,at=c(0,600,1200,1800,2400), label = c(&quot;0:00&quot;,&quot;6:00&quot;,&quot;12:00&quot;,&quot;18:00&quot;,&quot;24:00&quot;))
+axis(2)
+print(h2)
+graphics.off()
+maxSteps &lt;- averagePerInterval[which.max(averagePerInterval$steps),] # 8.35 + 5-minute  = (8.35-8.40)
+</code></pre>
+
+<h2>Imputing missing values</h2>
+
+<h2>Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)</h2>
+
+<pre><code class="r">missingvalCount &lt;- sum(is.na(data$steps))  # 2304
+</code></pre>
+
+<h2>Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.</h2>
+
+<h2>Fill NA with the average value for each 5 minutes interval</h2>
+
+<h2>Create a new dataset that is equal to the original dataset but with the missing data filled in.</h2>
+
+<pre><code class="r">missingValFillin  &lt;- data 
+for (i in 1:nrow(missingValFillin )){
+    if (is.na(missingValFillin $steps[i])){
+        missingValFillin $steps[i] &lt;- averagePerInterval$steps[which(missingValFillin $interval[i] == averagePerInterval$interval)]}
+}
+
+missingValFillin &lt;- arrange(missingValFillin, interval) # sorting the data by interval
+missingvalCount &lt;- sum(is.na(missingValFillin$steps)) # 0 ; test count the missing value 
+</code></pre>
+
+<h2>Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.</h2>
+
+<h2>Do these values differ from the estimates from the first part of the assignment?</h2>
+
+<h2>What is the impact of imputing missing data on the estimates of the total daily number of steps?</h2>
+
+<h2>TotalStepsMissingValueFillin</h2>
+
+<pre><code class="r">totalPerDayStepsMissingvalueFillin &lt;- ddply(missingValFillin, .(date), summarise, steps=sum(steps))
+</code></pre>
+
+<h2>Try plot the data</h2>
+
+<pre><code class="r">if(&quot;figure&quot;%in%dir()==FALSE) dir.create(&quot;figure&quot;)
+png(filename=paste(curdir,&#39;/figure/unnamed-chunk-3.png&#39;,sep=&quot;&quot;),width=480,height=480,units=&#39;px&#39;)
+h3 &lt;- hist(totalPerDayStepsMissingvalueFillin$steps, breaks = 20, main=&quot;Number of Steps&quot;, xlab=&quot;Total number of steps taken each day&quot;, ylab = &quot;Number of Days&quot;,col=&quot;red&quot;)
+print(h3)
+graphics.off()
+
+mean(totalPerDayStepsMissingvalueFillin$steps) # 10766.19
+median(totalPerDayStepsMissingvalueFillin$steps) # 10766.19
+abs(mean(totalPerDay$steps)-mean(totalPerDayStepsMissingvalueFillin$steps)) # 0
+abs(median(totalPerDay$steps)- median(totalPerDayStepsMissingvalueFillin$steps))/median(totalPerDay$steps) #0.0001104207
+totalDifference &lt;- sum(totalPerDayStepsMissingvalueFillin$steps) - sum(dataClean$steps)  # 86129.51
+</code></pre>
+
+<h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+
+<h2>Create a new factor variable in the dataset with two levels - &ldquo;weekday&rdquo; and &ldquo;weekend&rdquo; indicating whether a given date is a weekday or weekend day.</h2>
+
+<pre><code class="r">Sys.setlocale(&quot;LC_TIME&quot;, &quot;English&quot;) 
+missingValFillin$weekdays &lt;- weekdays(as.Date(missingValFillin$date))
+missingValFillin$weekdays &lt;- ifelse(missingValFillin$weekdays %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;),&quot;weekend&quot;, &quot;weekday&quot;)
+average &lt;- ddply(missingValFillin, .(interval, weekdays), summarise, steps=mean(steps))
+</code></pre>
+
+<h2>Make a panel plot containing a time series plot (i.e. type = &ldquo;l&rdquo;) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.</h2>
+
+<pre><code class="r">if(&quot;figure&quot;%in%dir()==FALSE) dir.create(&quot;figure&quot;)
+h4 &lt;- png(filename=paste(curdir,&#39;/figure/unnamed-chunk-4.png&#39;,sep=&quot;&quot;),width=480,height=480,units=&#39;px&#39;)
+xyplot(steps ~ interval | weekdays, data = average, layout = c(1, 2), type=&quot;l&quot;, xlab = &quot;Interval&quot;, ylab = &quot;Number of steps&quot; , col=&quot;red&quot;)
+print(h4)
+graphics.off()
 </code></pre>
 
 </body>
