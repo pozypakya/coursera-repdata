@@ -1,12 +1,7 @@
 
 # Reproducible Research: Peer Assessment 1
 
-## load all the libraries
-
-.plot of chunk unnamed-chunk-1
-image::D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/figure/unnamed-chunk-1-1.png[plot of chunk unnamed-chunk-1,align=default]
-
-
+> load all the libraries
 
 ```r
 is.installed <- function(mypkg) is.element(mypkg, installed.packages()[,1]) 
@@ -23,7 +18,7 @@ if (is.installed('lattice') == 'FALSE') {install.packages("lattice")} else{libra
 ```
 ## Loading and preprocessing the data
 
-## set working directory
+> set working directory
 ```r
 curdir <-getwd()
 file.url<-'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
@@ -31,68 +26,80 @@ download.file(file.url,destfile=paste(curdir,'/repdata%2Fdata%2Factivity.zip',se
 unzip(paste(curdir,'/repdata%2Fdata%2Factivity.zip',sep=""),exdir=paste(curdir,sep=""),overwrite=TRUE)
 ```
 
-## Loading and preprocessing the data
+> Read the CSV
 ```r
 data <- read.csv(paste(curdir,'/activity.csv',sep=""))
 ```
 
-## Ignore missing value
+> Ignore missing value
 ```r
 dataClean <- subset(data, is.na(data$steps) == F)
 totalPerDay <- ddply(dataClean, .(date), summarise, steps=sum(steps))
 ```
 
-## Plot /  Make a histogram of the total number of steps taken each day
+> Plot /  Make a histogram of the total number of steps taken each day
+
 ```r
-if("figure"%in%dir()==FALSE) dir.create("figure")
-png(filename=paste(curdir,'/figure/unnamed-chunk-1.png',sep=""),width=480,height=480,units='px')
-h1 <- hist(totalPerDay$steps , breaks = 20, main="Number of Steps", 
+hist(totalPerDay$steps , breaks = 20, main="Number of Steps", 
      xlab="Total number of steps taken each day", ylab = "Number of Days",col="red")
-print(h1)
-graphics.off()
 ```
 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png) 
+
 ## Calculate and report the mean and median of the total number of steps taken per day
-## mean
+> mean
+
 ```r
 mean(totalPerDay$steps)
 ```
 
-## median
+```
+## [1] 10766.19
+```
+
+> median
+
 ```r
 median(totalPerDay$steps)	 
 ```
 
-
-## What is the average daily activity pattern?
-## Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```r
-averagePerInterval <- ddply(dataClean, .(interval), summarise, steps=mean(steps))
+```
+## [1] 10765
 ```
 
-## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+## What is the average daily activity pattern?
+>  Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+>  Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+
 ```r
-if("figure"%in%dir()==FALSE) dir.create("figure")
-png(filename=paste(curdir,'/figure/unnamed-chunk-2.png',sep=""),width=480,height=480,units='px')
-h2 <- plot(averagePerInterval$interval, averagePerInterval$steps,axes = F, type="l", col="red", xlab="Time", ylab="Average Number of Steps",
+averagePerInterval <- ddply(dataClean, .(interval), summarise, steps=mean(steps))
+plot(averagePerInterval$interval, averagePerInterval$steps,axes = F, type="l", col="red", xlab="Time", ylab="Average Number of Steps",
      main="Average Daily Activity Pattern")
 axis(1,at=c(0,600,1200,1800,2400), label = c("0:00","6:00","12:00","18:00","24:00"))
 axis(2)
-print(h2)
-graphics.off()
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+```r
 maxSteps <- averagePerInterval[which.max(averagePerInterval$steps),] # 8.35 + 5-minute  = (8.35-8.40)
 ```
 
 ## Imputing missing values
 
-## Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+>  Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
 ```r
 missingvalCount <- sum(is.na(data$steps))  # 2304
 ```
 
-## Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-## Fill NA with the average value for each 5 minutes interval
-## Create a new dataset that is equal to the original dataset but with the missing data filled in.
+>  Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+>  Fill NA with the average value for each 5 minutes interval
+>  Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
 ```r
 missingValFillin  <- data 
 for (i in 1:nrow(missingValFillin )){
@@ -104,33 +111,63 @@ missingValFillin <- arrange(missingValFillin, interval) # sorting the data by in
 missingvalCount <- sum(is.na(missingValFillin$steps)) # 0 ; test count the missing value 
 ```
 
-## Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
-## Do these values differ from the estimates from the first part of the assignment? 
-## What is the impact of imputing missing data on the estimates of the total daily number of steps?
+>  Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
+>  Do these values differ from the estimates from the first part of the assignment? 
+>  What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-## TotalStepsMissingValueFillin
+> TotalStepsMissingValueFillin
+
 ```r
 totalPerDayStepsMissingvalueFillin <- ddply(missingValFillin, .(date), summarise, steps=sum(steps))
 ```
 
-## Try plot the data
-```r
-if("figure"%in%dir()==FALSE) dir.create("figure")
-png(filename=paste(curdir,'/figure/unnamed-chunk-3.png',sep=""),width=480,height=480,units='px')
-h3 <- hist(totalPerDayStepsMissingvalueFillin$steps, breaks = 20, main="Number of Steps", xlab="Total number of steps taken each day", ylab = "Number of Days",col="red")
-print(h3)
-graphics.off()
+>  Trying plot the data to look into
 
+```r
+hist(totalPerDayStepsMissingvalueFillin$steps, breaks = 20, main="Number of Steps", xlab="Total number of steps taken each day", ylab = "Number of Days",col="red")
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
+```r
 mean(totalPerDayStepsMissingvalueFillin$steps) # 10766.19
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(totalPerDayStepsMissingvalueFillin$steps) # 10766.19
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 abs(mean(totalPerDay$steps)-mean(totalPerDayStepsMissingvalueFillin$steps)) # 0
+```
+
+```
+## [1] 0
+```
+
+```r
 abs(median(totalPerDay$steps)- median(totalPerDayStepsMissingvalueFillin$steps))/median(totalPerDay$steps) #0.0001104207
+```
+
+```
+## [1] 0.0001104207
+```
+
+```r
 totalDifference <- sum(totalPerDayStepsMissingvalueFillin$steps) - sum(dataClean$steps)  # 86129.51
 ```
 
-## Are there differences in activity patterns between weekdays and weekends?
+>   Are there differences in activity patterns between weekdays and weekends?
 
-## Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+>   Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 ```r
 Sys.setlocale("LC_TIME", "English") 
 missingValFillin$weekdays <- weekdays(as.Date(missingValFillin$date))
@@ -139,12 +176,11 @@ average <- ddply(missingValFillin, .(interval, weekdays), summarise, steps=mean(
 ```
 
 
-## Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+>    Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+
 ```r
-if("figure"%in%dir()==FALSE) dir.create("figure")
-h4 <- png(filename=paste(curdir,'/figure/unnamed-chunk-4.png',sep=""),width=480,height=480,units='px')
 xyplot(steps ~ interval | weekdays, data = average, layout = c(1, 2), type="l", xlab = "Interval", ylab = "Number of steps" , col="red")
-print(h4)
-graphics.off()
 ```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
 
