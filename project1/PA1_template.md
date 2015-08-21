@@ -37,6 +37,10 @@ dataClean <- subset(data, is.na(data$steps) == F)
 totalPerDay <- ddply(dataClean, .(date), summarise, steps=sum(steps))
 ```
 
+## What is mean total number of steps taken per day?
+
+> If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
+
 > Plot /  Make a histogram of the total number of steps taken each day
 
 ```r
@@ -45,8 +49,7 @@ hist(totalPerDay$steps , breaks = 20, main="Number of Steps",
 ```
 
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png) 
-
-## Calculate and report the mean and median of the total number of steps taken per day
+>Calculate and report the mean and median of the total number of steps taken per day
 > mean
 
 ```r
@@ -165,7 +168,7 @@ abs(median(totalPerDay$steps)- median(totalPerDayStepsMissingvalueFillin$steps))
 totalDifference <- sum(totalPerDayStepsMissingvalueFillin$steps) - sum(dataClean$steps)  # 86129.51
 ```
 
->   Are there differences in activity patterns between weekdays and weekends?
+## Are there differences in activity patterns between weekdays and weekends?
 
 >   Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 ```r
