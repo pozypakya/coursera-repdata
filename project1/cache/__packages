@@ -1,5 +1,4 @@
 base
-knitr
 dplyr
 ggplot2
 ggthemes
@@ -7,5 +6,8 @@ scales
 RColorBrewer
 lubridate
 plyr
+knitr
 lattice
 markdown
+bitops
+RCurl
