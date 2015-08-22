@@ -34,3 +34,4 @@ library(knitr)
 setwd("D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1")
 knitr::knit2html("PA1_template.Rmd", options=c("use_xhtml","smartypants","mathjax","highlight_code", "base64_images"))
 
+http://htmlpreview.github.io/?https://github.com/pozypakya/coursera-repdata/blob/master/project1/PA1_template.html
