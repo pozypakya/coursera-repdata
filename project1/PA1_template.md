@@ -49,7 +49,7 @@ totalPerDay <- ddply(dataClean, .(date), summarise, steps=sum(steps))
 * If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
 * Plot /  Make a histogram of the total number of steps taken each day
 
-![plot of chunk unnamed-chunk-5](D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/figure/unnamed-chunk-5-1.png) 
+![plot of chunk unnamed-chunk-5](https://github.com/pozypakya/coursera-repdata/blob/master/project1/figure/unnamed-chunk-5-1.png) 
 
 ```r
 hist(totalPerDay$steps , breaks = 20, main="Number of Steps", 
@@ -83,7 +83,7 @@ median(totalPerDay$steps)
 * Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 * Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-![plot of chunk unnamed-chunk-8](D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/figure/unnamed-chunk-8-1.png) 
+![plot of chunk unnamed-chunk-8](https://github.com/pozypakya/coursera-repdata/blob/master/project1/figure/unnamed-chunk-8-1.png) 
 ```r
 averagePerInterval <- ddply(dataClean, .(interval), summarise, steps=mean(steps))
 plot(averagePerInterval$interval, averagePerInterval$steps,axes = F, type="l", col="red", xlab="Time", ylab="Average Number of Steps",
@@ -134,7 +134,7 @@ totalPerDayStepsMissingvalueFillin <- ddply(missingValFillin, .(date), summarise
 
 * Trying plot the data to investigate 
 
-![plot of chunk unnamed-chunk-12](D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/figure/unnamed-chunk-12-1.png) 
+![plot of chunk unnamed-chunk-12](https://github.com/pozypakya/coursera-repdata/blob/master/project1/figure/unnamed-chunk-12-1.png) 
 
 ```r
 hist(totalPerDayStepsMissingvalueFillin$steps, breaks = 20, main="Number of Steps", xlab="Total number of steps taken each day", ylab = "Number of Days",col="red")
@@ -208,7 +208,7 @@ average <- ddply(missingValFillin, .(interval, weekdays), summarise, steps=mean(
 averaged across all weekday days or weekend days (y-axis). 
 * See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
-![plot of chunk unnamed-chunk-19](D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/figure/unnamed-chunk-19-1.png) 
+![plot of chunk unnamed-chunk-19](https://github.com/pozypakya/coursera-repdata/blob/master/project1/figure/unnamed-chunk-19-1.png) 
 
 ```r
 xyplot(steps ~ interval | weekdays, data = average, layout = c(1, 2), type="l", xlab = "Interval", ylab = "Number of steps" , col="red")
