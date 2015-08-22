@@ -14,6 +14,7 @@ if (is.installed('ggplot2') == 'FALSE') {install.packages("ggplot2")} else{libra
 if (is.installed('plyr') == 'FALSE') {install.packages("plyr")} else{library(plyr)}
 if (is.installed('knitr') == 'FALSE') {install.packages("knitr")} else{library(knitr)}
 if (is.installed('lattice') == 'FALSE') {install.packages("lattice")} else{library(lattice)}
+if (is.installed('RCurl') == 'FALSE') {install.packages("RCurl")} else{library(RCurl)}
 
 # ```
 ## Loading and preprocessing the data
@@ -21,7 +22,7 @@ if (is.installed('lattice') == 'FALSE') {install.packages("lattice")} else{libra
 # > set working directory
 # # ```r
 curdir <-getwd()
-file.url<-'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
+file.url<-'http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
 download.file(file.url,destfile=paste(curdir,'/repdata%2Fdata%2Factivity.zip',sep=""))
 unzip(paste(curdir,'/repdata%2Fdata%2Factivity.zip',sep=""),exdir=paste(curdir,sep=""),overwrite=TRUE)
 # ```
