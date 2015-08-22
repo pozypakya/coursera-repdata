@@ -48,7 +48,9 @@ hist(totalPerDay$steps , breaks = 20, main="Number of Steps",
      xlab="Total number of steps taken each day", ylab = "Number of Days",col="red")
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png) 
+```
+## Error in hist(totalPerDay$steps, breaks = 20, main = "Number of Steps", : object 'totalPerDay' not found
+```
 >Calculate and report the mean and median of the total number of steps taken per day
 > mean
 
@@ -57,7 +59,7 @@ mean(totalPerDay$steps)
 ```
 
 ```
-## [1] 10766.19
+## Error in mean(totalPerDay$steps): object 'totalPerDay' not found
 ```
 
 > median
@@ -67,7 +69,7 @@ median(totalPerDay$steps)
 ```
 
 ```
-## [1] 10765
+## Error in median(totalPerDay$steps): object 'totalPerDay' not found
 ```
 
 
@@ -79,16 +81,43 @@ median(totalPerDay$steps)
 
 ```r
 averagePerInterval <- ddply(dataClean, .(interval), summarise, steps=mean(steps))
+```
+
+```
+## Error in eval(expr, envir, enclos): could not find function "ddply"
+```
+
+```r
 plot(averagePerInterval$interval, averagePerInterval$steps,axes = F, type="l", col="red", xlab="Time", ylab="Average Number of Steps",
      main="Average Daily Activity Pattern")
+```
+
+```
+## Error in plot(averagePerInterval$interval, averagePerInterval$steps, axes = F, : object 'averagePerInterval' not found
+```
+
+```r
 axis(1,at=c(0,600,1200,1800,2400), label = c("0:00","6:00","12:00","18:00","24:00"))
+```
+
+```
+## Error in axis(1, at = c(0, 600, 1200, 1800, 2400), label = c("0:00", "6:00", : plot.new has not been called yet
+```
+
+```r
 axis(2)
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+```
+## Error in axis(2): plot.new has not been called yet
+```
 
 ```r
 maxSteps <- averagePerInterval[which.max(averagePerInterval$steps),] # 8.35 + 5-minute  = (8.35-8.40)
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'averagePerInterval' not found
 ```
 
 ## Imputing missing values
@@ -97,6 +126,10 @@ maxSteps <- averagePerInterval[which.max(averagePerInterval$steps),] # 8.35 + 5-
 
 ```r
 missingvalCount <- sum(is.na(data$steps))  # 2304
+```
+
+```
+## Error in data$steps: object of type 'closure' is not subsettable
 ```
 
 >  Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -109,9 +142,26 @@ for (i in 1:nrow(missingValFillin )){
     if (is.na(missingValFillin $steps[i])){
         missingValFillin $steps[i] <- averagePerInterval$steps[which(missingValFillin $interval[i] == averagePerInterval$interval)]}
 }
+```
 
+```
+## Error in 1:nrow(missingValFillin): argument of length 0
+```
+
+```r
 missingValFillin <- arrange(missingValFillin, interval) # sorting the data by interval
+```
+
+```
+## Error in eval(expr, envir, enclos): could not find function "arrange"
+```
+
+```r
 missingvalCount <- sum(is.na(missingValFillin$steps)) # 0 ; test count the missing value 
+```
+
+```
+## Error in missingValFillin$steps: object of type 'closure' is not subsettable
 ```
 
 >  Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
@@ -124,20 +174,26 @@ missingvalCount <- sum(is.na(missingValFillin$steps)) # 0 ; test count the missi
 totalPerDayStepsMissingvalueFillin <- ddply(missingValFillin, .(date), summarise, steps=sum(steps))
 ```
 
+```
+## Error in eval(expr, envir, enclos): could not find function "ddply"
+```
+
 >  Trying plot the data to look into
 
 ```r
 hist(totalPerDayStepsMissingvalueFillin$steps, breaks = 20, main="Number of Steps", xlab="Total number of steps taken each day", ylab = "Number of Days",col="red")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+```
+## Error in hist(totalPerDayStepsMissingvalueFillin$steps, breaks = 20, main = "Number of Steps", : object 'totalPerDayStepsMissingvalueFillin' not found
+```
 
 ```r
 mean(totalPerDayStepsMissingvalueFillin$steps) # 10766.19
 ```
 
 ```
-## [1] 10766.19
+## Error in mean(totalPerDayStepsMissingvalueFillin$steps): object 'totalPerDayStepsMissingvalueFillin' not found
 ```
 
 ```r
@@ -145,7 +201,7 @@ median(totalPerDayStepsMissingvalueFillin$steps) # 10766.19
 ```
 
 ```
-## [1] 10766.19
+## Error in median(totalPerDayStepsMissingvalueFillin$steps): object 'totalPerDayStepsMissingvalueFillin' not found
 ```
 
 ```r
@@ -153,7 +209,7 @@ abs(mean(totalPerDay$steps)-mean(totalPerDayStepsMissingvalueFillin$steps)) # 0
 ```
 
 ```
-## [1] 0
+## Error in mean(totalPerDay$steps): object 'totalPerDay' not found
 ```
 
 ```r
@@ -161,11 +217,15 @@ abs(median(totalPerDay$steps)- median(totalPerDayStepsMissingvalueFillin$steps))
 ```
 
 ```
-## [1] 0.0001104207
+## Error in median(totalPerDay$steps): object 'totalPerDay' not found
 ```
 
 ```r
 totalDifference <- sum(totalPerDayStepsMissingvalueFillin$steps) - sum(dataClean$steps)  # 86129.51
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'totalPerDayStepsMissingvalueFillin' not found
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -185,5 +245,7 @@ average <- ddply(missingValFillin, .(interval, weekdays), summarise, steps=mean(
 xyplot(steps ~ interval | weekdays, data = average, layout = c(1, 2), type="l", xlab = "Interval", ylab = "Number of steps" , col="red")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+```
+## Error in eval(expr, envir, enclos): could not find function "xyplot"
+```
 

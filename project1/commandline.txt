@@ -1,37 +1,4 @@
-curdir <-getwd()
-
-
-setwd("D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1")
-knit2html('D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.Rmd','D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.html')
-
-
-library(knitr)
-library(markdown)
-knitr::opts_chunk$set(echo=FALSE, fig.path='D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/figure/', cache=TRUE)
-knit("D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.Rmd", output="D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.md")
-markdownToHTML("D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.md", output="D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.html")
-
-knit('D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.Rmd','')
-
-rmarkdown::render('D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/PA1_template.Rmd')
-
-paste(curdir,'/PA1_template.Rmd',sep="")
-
-Sys.setenv(RSTUDIO_PANDOC="D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1/")
-
-
-
-
-
-
-
-
-
-
-
-
 library(knitr)
 setwd("D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project1")
 knitr::knit2html("PA1_template.Rmd", options=c("use_xhtml","smartypants","mathjax","highlight_code", "base64_images"))
-
-http://htmlpreview.github.io/?https://github.com/pozypakya/coursera-repdata/blob/master/project1/PA1_template.html
+browseURL('http://htmlpreview.github.io/?https://github.com/pozypakya/coursera-repdata/blob/master/project1/PA1_template.html')
