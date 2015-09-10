@@ -60,21 +60,23 @@ if (is.installed('xtable') == 'FALSE') {install.packages("xtable");library(xtabl
 ```
 
 
-The first step is to read the data into a data frame.
+* The first step is to read the data into a data frame.
 
 ```r
 options( warn = -1 )
 curdir <-getwd()
-#file.url<-'http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2'
-#download.file(file.url,destfile=paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep=""))
-#storm <- read.csv(bzfile(paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep="")),nrows=1500)
-storm <- read.csv(bzfile("c://repdata%2Fdata%2FStormData.csv.bz2"),nrows=1500)
+file.url<-'http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2'
+download.file(file.url,destfile=paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep=""))
+storm <- read.csv(bzfile(paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep="")))
 ```
 
 
+```
+## [1] 985
+```
 
 
-Get the no. of event types
+* Get the no. of event types
 
 ```r
 length(unique(storm$EVTYPE))
@@ -82,10 +84,10 @@ length(unique(storm$EVTYPE))
 
 
 ```
-## [1] 3
+## [1] 985
 ```
 
-Converting letters to lower casing
+* Converting letters to lower casing
 
 ```r
 event_types <- tolower(storm$EVTYPE)
@@ -93,7 +95,7 @@ event_types <- tolower(storm$EVTYPE)
 
 
 
-Replace punctation characters with a space
+* Replace punctation characters with a space
 
 ```r
 event_types <- gsub("[[:blank:][:punct:]+]", " ", event_types)
@@ -101,7 +103,7 @@ event_types <- gsub("[[:blank:][:punct:]+]", " ", event_types)
 
 
 
-Get the unique of event types
+* Get the unique of event types
 
 ```r
 length(unique(event_types))
@@ -109,10 +111,10 @@ length(unique(event_types))
 
 
 ```
-## [1] 3
+## [1] 874
 ```
 
-Get the casualities
+* Get the casualities
 
 ```r
 library(plyr)
@@ -123,7 +125,7 @@ casualties <- ddply(storm, .(EVTYPE), summarize,
 
 
 
-Find events which causing most injury and death
+* Find events which causing most injury and death
 
 ```r
 fatal_events <- head(casualties[order(casualties$fatalities, decreasing = T), ], 10)
@@ -134,21 +136,35 @@ injury_events[, c("EVTYPE", "injuries")]
 
 
 ```
-##      EVTYPE fatalities
-## 2   TORNADO        188
-## 1      HAIL          0
-## 3 TSTM WIND          0
+##             EVTYPE fatalities
+## 834        TORNADO       5633
+## 130 EXCESSIVE HEAT       1903
+## 153    FLASH FLOOD        978
+## 275           HEAT        937
+## 464      LIGHTNING        816
+## 856      TSTM WIND        504
+## 170          FLOOD        470
+## 585    RIP CURRENT        368
+## 359      HIGH WIND        248
+## 19       AVALANCHE        224
 ```
 
 ```
-##      EVTYPE injuries
-## 2   TORNADO     2860
-## 1      HAIL        0
-## 3 TSTM WIND        0
+##                EVTYPE injuries
+## 834           TORNADO    91346
+## 856         TSTM WIND     6957
+## 170             FLOOD     6789
+## 130    EXCESSIVE HEAT     6525
+## 464         LIGHTNING     5230
+## 275              HEAT     2100
+## 427         ICE STORM     1975
+## 153       FLASH FLOOD     1777
+## 760 THUNDERSTORM WIND     1488
+## 244              HAIL     1361
 ```
 
 
-Define function for exponent transformation and apply the transformation
+* Define function for exponent transformation and apply the transformation
 
 ```r
 exp_transform <- function(e) {
@@ -178,15 +194,8 @@ storm$crop_dmg <- storm$CROPDMG * (10 ** crop_dmg_exp)
 ```
 
 
-```
-## Error in FUN(X[[i]], ...): Invalid exponent value.
-```
 
-```
-## Error in `$<-.data.frame`(`*tmp*`, "crop_dmg", value = c(0, 0, 0, 0, 0, : replacement has 902297 rows, data has 1500
-```
-
-Calculating loss by event type
+* Calculating loss by event type
 
 ```r
 library(plyr)
@@ -197,11 +206,8 @@ econ_loss <- ddply(storm, .(EVTYPE), summarize,
 ```
 
 
-```
-## Error in eval(expr, envir, enclos): object 'crop_dmg' not found
-```
 
-Removing events with no loss
+* Removing events with no loss
 
 ```r
 econ_loss <- econ_loss[(econ_loss$prop_dmg > 0 | econ_loss$crop_dmg > 0), ]
@@ -239,7 +245,7 @@ crop_dmg_events[, c("EVTYPE", "crop_dmg")]
 ## 212      FROST/FREEZE  1094086000
 ```
 
-Set the levels in order  and produce 2 types of graph and combined as 1
+* Set the levels in order  and produce 2 types of graph and combined as Top deadly weather
 
 ```r
 library(ggplot2)
@@ -265,7 +271,7 @@ grid.arrange(p1, p2 , ncol=1, nrow=2, top = "Top deadly weather events in the US
 ```
 ![plot of chunk unnamed-chunk-12](D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2/figure/unnamed-chunk-12-1.png) 
 
-Set the levels in order  and produce 2 types of graph and combined as 1
+* Set the levels in order  and produce 2 types of graph and combined as Weather costs
 
 ```r
 library(ggplot2)
