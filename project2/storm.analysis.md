@@ -1,3 +1,5 @@
+# Reproducible Research: Peer Assessment 2
+
 Health and Economic Impact of Weather Events in the US
 ======================================================
 
@@ -33,122 +35,120 @@ The analysis was performed on
 There is also some documentation of the data available
 [here](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf).
 
+* Load all the required library
+
+
+
+```r
+options( warn = -1 )
+is.installed <- function(mypkg) is.element(mypkg, installed.packages()[,1]) 
+if (is.installed('dplyr') == 'FALSE') {install.packages("dplyr");library(dplyr)} else{library(dplyr)}
+if (is.installed('ggthemes') == 'FALSE') {install.packages("ggthemes");library(ggthemes)} else{library(ggthemes)}
+if (is.installed('scales') == 'FALSE') {install.packages("scales");library(scales)} else{library(scales)}
+if (is.installed('RColorBrewer') == 'FALSE') {install.packages("RColorBrewer");library(RColorBrewer)} else{library(RColorBrewer)}
+if (is.installed('lubridate') == 'FALSE') {install.packages("lubridate");library(lubridate)} else{library(lubridate)}
+if (is.installed('ggplot2') == 'FALSE') {install.packages("ggplot2");library(ggplot2)} else{library(ggplot2)}
+if (is.installed('plyr') == 'FALSE') {install.packages("plyr");library(plyr)} else{library(plyr)}
+if (is.installed('knitr') == 'FALSE') {install.packages("knitr");library(knitr)} else{library(knitr)}
+if (is.installed('lattice') == 'FALSE') {install.packages("lattice");library(lattice)} else{library(lattice)}
+if (is.installed('RCurl') == 'FALSE') {install.packages("RCurl");library(RCurl)} else{library(RCurl)}
+if (is.installed('reshape') == 'FALSE') {install.packages("reshape");library(reshape)} else{library(reshape)}
+if (is.installed('car') == 'FALSE') {install.packages("car");library(car)} else{library(car)}
+if (is.installed('gridExtra') == 'FALSE') {install.packages("gridExtra");library(gridExtra)} else{library(gridExtra)}
+if (is.installed('grid') == 'FALSE') {install.packages("grid");library(grid)} else{library(grid)}
+if (is.installed('xtable') == 'FALSE') {install.packages("xtable");library(xtable)} else{library(xtable)}
+```
+
+
 The first step is to read the data into a data frame.
 
 ```r
-storm <- read.csv(bzfile("data/repdata-data-StormData.csv.bz2"))
+options( warn = -1 )
+curdir <-getwd()
+#file.url<-'http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2'
+#download.file(file.url,destfile=paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep=""))
+#storm <- read.csv(bzfile(paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep="")),nrows=1500)
+storm <- read.csv(bzfile("c://repdata%2Fdata%2FStormData.csv.bz2"),nrows=1500)
 ```
 
-Before the analysis, the data need some preprocessing. Event types don't have a
-specific format. For instance, there are events with types `Frost/Freeze`,
-`FROST/FREEZE` and `FROST\\FREEZE` which obviously refer to the same type of
-event.
 
 
+
+Get the no. of event types
 
 ```r
-# number of unique event types
 length(unique(storm$EVTYPE))
 ```
 
+
 ```
-## [1] 985
+## [1] 3
 ```
 
+Converting letters to lower casing
+
 ```r
-# translate all letters to lowercase
 event_types <- tolower(storm$EVTYPE)
-# replace all punct. characters with a space
+```
+
+
+
+Replace punctation characters with a space
+
+```r
 event_types <- gsub("[[:blank:][:punct:]+]", " ", event_types)
+```
+
+
+
+Get the unique of event types
+
+```r
 length(unique(event_types))
 ```
 
-```
-## [1] 874
-```
 
-```r
-# update the data frame
-storm$EVTYPE <- event_types
+```
+## [1] 3
 ```
 
-No further data preprocessing was performed although the event type field can be
-processed further to merge event types such as `tstm wind` and `thunderstorm wind`. 
-After the cleaning, as expected, the number of unique event types reduce
-significantly. For further analysis, the cleaned event types are used.
-
-
-Dangerous Events with respect to Population Health
-================================================
-
-To find the event types that are most harmful to population health, the number
-of casualties are aggregated by the event type.
-
+Get the casualities
 
 ```r
 library(plyr)
 casualties <- ddply(storm, .(EVTYPE), summarize,
                     fatalities = sum(FATALITIES),
                     injuries = sum(INJURIES))
+```
 
-# Find events that caused most death and injury
+
+
+Find events which causing most injury and death
+
+```r
 fatal_events <- head(casualties[order(casualties$fatalities, decreasing = T), ], 10)
 injury_events <- head(casualties[order(casualties$injuries, decreasing = T), ], 10)
-```
-
-Top 10 events that caused largest number of deaths are
-
-
-```r
 fatal_events[, c("EVTYPE", "fatalities")]
-```
-
-```
-##             EVTYPE fatalities
-## 737        tornado       5633
-## 109 excessive heat       1903
-## 132    flash flood        978
-## 234           heat        937
-## 400      lightning        816
-## 760      tstm wind        504
-## 148          flood        470
-## 511    rip current        368
-## 309      high wind        248
-## 11       avalanche        224
-```
-
-Top 10 events that caused most number of injuries are
-
-
-```r
 injury_events[, c("EVTYPE", "injuries")]
 ```
 
+
 ```
-##                EVTYPE injuries
-## 737           tornado    91346
-## 760         tstm wind     6957
-## 148             flood     6789
-## 109    excessive heat     6525
-## 400         lightning     5230
-## 234              heat     2100
-## 377         ice storm     1975
-## 132       flash flood     1777
-## 670 thunderstorm wind     1488
-## 203              hail     1361
+##      EVTYPE fatalities
+## 2   TORNADO        188
+## 1      HAIL          0
+## 3 TSTM WIND          0
 ```
 
-Economic Effects of Weather Events
-==================================
+```
+##      EVTYPE injuries
+## 2   TORNADO     2860
+## 1      HAIL        0
+## 3 TSTM WIND        0
+```
 
-To analyze the impact of weather events on the economy, available property
-damage and crop damage reportings/estimates were used.
 
-In the raw data, the property damage is represented with two fields, a number
-`PROPDMG` in dollars and the exponent `PROPDMGEXP`. Similarly, the crop damage
-is represented using two fields, `CROPDMG` and `CROPDMGEXP`. The first step in the
-analysis is to calculate the property and crop damage for each event.
-
+Define function for exponent transformation and apply the transformation
 
 ```r
 exp_transform <- function(e) {
@@ -169,86 +169,82 @@ exp_transform <- function(e) {
         stop("Invalid exponent value.")
     }
 }
-```
 
-
-```r
 prop_dmg_exp <- sapply(storm$PROPDMGEXP, FUN=exp_transform)
 storm$prop_dmg <- storm$PROPDMG * (10 ** prop_dmg_exp)
 crop_dmg_exp <- sapply(storm$CROPDMGEXP, FUN=exp_transform)
 storm$crop_dmg <- storm$CROPDMG * (10 ** crop_dmg_exp)
+
 ```
 
 
+```
+## Error in FUN(X[[i]], ...): Invalid exponent value.
+```
+
+```
+## Error in `$<-.data.frame`(`*tmp*`, "crop_dmg", value = c(0, 0, 0, 0, 0, : replacement has 902297 rows, data has 1500
+```
+
+Calculating loss by event type
 
 ```r
-# Compute the economic loss by event type
 library(plyr)
 econ_loss <- ddply(storm, .(EVTYPE), summarize,
                    prop_dmg = sum(prop_dmg),
                    crop_dmg = sum(crop_dmg))
 
-# filter out events that caused no economic loss
+```
+
+
+```
+## Error in eval(expr, envir, enclos): object 'crop_dmg' not found
+```
+
+Removing events with no loss
+
+```r
 econ_loss <- econ_loss[(econ_loss$prop_dmg > 0 | econ_loss$crop_dmg > 0), ]
 prop_dmg_events <- head(econ_loss[order(econ_loss$prop_dmg, decreasing = T), ], 10)
 crop_dmg_events <- head(econ_loss[order(econ_loss$crop_dmg, decreasing = T), ], 10)
-```
-
-Top 10 events that caused most property damage (in dollars) are as follows
-
-
-```r
 prop_dmg_events[, c("EVTYPE", "prop_dmg")]
-```
-
-```
-##                 EVTYPE  prop_dmg
-## 132        flash flood 6.820e+13
-## 694 thunderstorm winds 2.087e+13
-## 737            tornado 1.079e+12
-## 203               hail 3.158e+11
-## 400          lightning 1.729e+11
-## 148              flood 1.447e+11
-## 361  hurricane typhoon 6.931e+10
-## 155           flooding 5.921e+10
-## 581        storm surge 4.332e+10
-## 264         heavy snow 1.793e+10
-```
-
-Similarly, the events that caused biggest crop damage are
-
-
-```r
 crop_dmg_events[, c("EVTYPE", "crop_dmg")]
 ```
 
 ```
-##                EVTYPE  crop_dmg
-## 77            drought 1.397e+10
-## 148             flood 5.662e+09
-## 515       river flood 5.029e+09
-## 377         ice storm 5.022e+09
-## 203              hail 3.026e+09
-## 352         hurricane 2.742e+09
-## 361 hurricane typhoon 2.608e+09
-## 132       flash flood 1.421e+09
-## 118      extreme cold 1.313e+09
-## 179      frost freeze 1.094e+09
+##                 EVTYPE     prop_dmg
+## 153        FLASH FLOOD 6.820237e+13
+## 786 THUNDERSTORM WINDS 2.086532e+13
+## 834            TORNADO 1.078951e+12
+## 244               HAIL 3.157558e+11
+## 464          LIGHTNING 1.729433e+11
+## 170              FLOOD 1.446577e+11
+## 411  HURRICANE/TYPHOON 6.930584e+10
+## 185           FLOODING 5.920825e+10
+## 670        STORM SURGE 4.332354e+10
+## 310         HEAVY SNOW 1.793259e+10
 ```
 
-Results
-=======
+```
+##                EVTYPE    crop_dmg
+## 95            DROUGHT 13972566000
+## 170             FLOOD  5661968450
+## 590       RIVER FLOOD  5029459000
+## 427         ICE STORM  5022113500
+## 244              HAIL  3025974480
+## 402         HURRICANE  2741910000
+## 411 HURRICANE/TYPHOON  2607872800
+## 153       FLASH FLOOD  1421317100
+## 140      EXTREME COLD  1292973000
+## 212      FROST/FREEZE  1094086000
+```
 
-Health impact of weather events
--------------------------------
-
-The following plot shows top dangerous weather event types.
-
+Set the levels in order  and produce 2 types of graph and combined as 1
 
 ```r
 library(ggplot2)
 library(gridExtra)
-# Set the levels in order
+
 p1 <- ggplot(data=fatal_events,
              aes(x=reorder(EVTYPE, fatalities), y=fatalities, fill=fatalities)) +
     geom_bar(stat="identity") +
@@ -264,25 +260,12 @@ p2 <- ggplot(data=injury_events,
     ylab("Total number of injuries") +
     xlab("Event type") +
     theme(legend.position="none")
-
-grid.arrange(p1, p2, main="Top deadly weather events in the US (1950-2011)")
+	
+grid.arrange(p1, p2 , ncol=1, nrow=2, top = "Top deadly weather events in the US (1950-2011)")	
 ```
+![plot of chunk unnamed-chunk-12](D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2/figure/unnamed-chunk-12-1.png) 
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
-
-Tornadoes cause most number of deaths and injuries among all event types. There 
-are more than 5,000 deaths and more than 10,000 injuries in the last 60 years
-in US, due to tornadoes. 
-The other event types that are most dangerous with respect to population health
-are excessive heat and flash floods.
-
-Economic impact of weather events
----------------------------------
-
-The following plot shows the most severe weather event types with respect to
-economic cost that they have costed since 1950s.
-
-
+Set the levels in order  and produce 2 types of graph and combined as 1
 
 ```r
 library(ggplot2)
@@ -303,18 +286,8 @@ p2 <- ggplot(data=crop_dmg_events,
     xlab("Event type") +
     ylab("Crop damage in dollars") + 
     theme(legend.position="none")
-
-grid.arrange(p1, p2, main="Weather costs to the US economy (1950-2011)")
+	
+grid.arrange(p1, p2 , ncol=1, nrow=2, top = "Weather costs to the US economy (1950-2011)")	
 ```
+![plot of chunk unnamed-chunk-13](D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2/figure/unnamed-chunk-13-1.png) 
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 
-
-Property damages are given in logarithmic scale due to large range of values.
-The data shows that flash floods and thunderstorm winds cost the largest
-property damages among weather-related natural diseasters. Note that, due to
-untidy nature of the available data, type `flood` and `flash flood` are
-separate values and should be merged for more accurate data-driven conclusions.
-
-The most severe weather event in terms of crop damage is the drought. In the last
-half century, the drought has caused more than 10 billion dollars damage. Other
-severe crop-damage-causing event types are floods and hails.

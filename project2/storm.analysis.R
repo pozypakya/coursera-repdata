@@ -1,21 +1,56 @@
 
-## ----cache=TRUE----------------------------------------------------------
-storm <- read.csv(bzfile("data/repdata-data-StormData.csv.bz2"))
+# Reproducible Research: Peer Assessment 2
+
+# > load all the libraries
 
 
-## ------------------------------------------------------------------------
-# number of unique event types
+# # ```r
+is.installed <- function(mypkg) is.element(mypkg, installed.packages()[,1]) 
+if (is.installed('dplyr') == 'FALSE') {install.packages("dplyr");library(dplyr)} else{library(dplyr)}
+if (is.installed('ggthemes') == 'FALSE') {install.packages("ggthemes");library(ggthemes)} else{library(ggthemes)}
+if (is.installed('scales') == 'FALSE') {install.packages("scales");library(scales)} else{library(scales)}
+if (is.installed('RColorBrewer') == 'FALSE') {install.packages("RColorBrewer");library(RColorBrewer)} else{library(RColorBrewer)}
+if (is.installed('lubridate') == 'FALSE') {install.packages("lubridate");library(lubridate)} else{library(lubridate)}
+if (is.installed('ggplot2') == 'FALSE') {install.packages("ggplot2");library(ggplot2)} else{library(ggplot2)}
+if (is.installed('plyr') == 'FALSE') {install.packages("plyr");library(plyr)} else{library(plyr)}
+if (is.installed('knitr') == 'FALSE') {install.packages("knitr");library(knitr)} else{library(knitr)}
+if (is.installed('lattice') == 'FALSE') {install.packages("lattice");library(lattice)} else{library(lattice)}
+if (is.installed('RCurl') == 'FALSE') {install.packages("RCurl");library(RCurl)} else{library(RCurl)}
+if (is.installed('reshape') == 'FALSE') {install.packages("reshape");library(reshape)} else{library(reshape)}
+if (is.installed('car') == 'FALSE') {install.packages("car");library(car)} else{library(car)}
+if (is.installed('gridExtra') == 'FALSE') {install.packages("gridExtra");library(gridExtra)} else{library(gridExtra)}
+if (is.installed('grid') == 'FALSE') {install.packages("grid");library(grid)} else{library(grid)}
+if (is.installed('xtable') == 'FALSE') {install.packages("xtable");library(xtable)} else{library(xtable)}
+
+# ```
+## Loading and preprocessing the data
+
+# > set working directory
+# # ```r
+curdir <-getwd()
+file.url<-'http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2'
+download.file(file.url,destfile=paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep=""))
+# ```
+# > Read the CSV
+# # ```r
+# storm <- read.csv(bzfile(paste(curdir,'/repdata%2Fdata%2FStormData.csv.bz2',sep="")),nrows=1500)
+storm <- read.csv(bzfile("c://repdata%2Fdata%2FStormData.csv.bz2"))
+# tail(storm)
+#
 length(unique(storm$EVTYPE))
-# translate all letters to lowercase
 event_types <- tolower(storm$EVTYPE)
 # replace all punct. characters with a space
 event_types <- gsub("[[:blank:][:punct:]+]", " ", event_types)
 length(unique(event_types))
-# update the data frame
-storm$EVTYPE <- event_types
 
+capitalize <- function(x) {
+  s <- strsplit(x, " ")[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+      sep="", collapse=" ")
+}
 
-## ------------------------------------------------------------------------
+storm$EVTYPE <- sapply(tolower(storm$EVTYPE),capitalize)
+
 library(plyr)
 casualties <- ddply(storm, .(EVTYPE), summarize,
                     fatalities = sum(FATALITIES),
@@ -24,17 +59,9 @@ casualties <- ddply(storm, .(EVTYPE), summarize,
 # Find events that caused most death and injury
 fatal_events <- head(casualties[order(casualties$fatalities, decreasing = T), ], 10)
 injury_events <- head(casualties[order(casualties$injuries, decreasing = T), ], 10)
-
-
-## ------------------------------------------------------------------------
 fatal_events[, c("EVTYPE", "fatalities")]
-
-
-## ------------------------------------------------------------------------
 injury_events[, c("EVTYPE", "injuries")]
 
-
-## ------------------------------------------------------------------------
 exp_transform <- function(e) {
     # h -> hundred, k -> thousand, m -> million, b -> billion
     if (e %in% c('h', 'H'))
@@ -54,20 +81,14 @@ exp_transform <- function(e) {
     }
 }
 
-
-## ----cache=TRUE----------------------------------------------------------
 prop_dmg_exp <- sapply(storm$PROPDMGEXP, FUN=exp_transform)
 storm$prop_dmg <- storm$PROPDMG * (10 ** prop_dmg_exp)
 crop_dmg_exp <- sapply(storm$CROPDMGEXP, FUN=exp_transform)
 storm$crop_dmg <- storm$CROPDMG * (10 ** crop_dmg_exp)
-
-
-## ------------------------------------------------------------------------
-# Compute the economic loss by event type
-library(plyr)
 econ_loss <- ddply(storm, .(EVTYPE), summarize,
                    prop_dmg = sum(prop_dmg),
                    crop_dmg = sum(crop_dmg))
+				   
 
 # filter out events that caused no economic loss
 econ_loss <- econ_loss[(econ_loss$prop_dmg > 0 | econ_loss$crop_dmg > 0), ]
@@ -75,17 +96,9 @@ prop_dmg_events <- head(econ_loss[order(econ_loss$prop_dmg, decreasing = T), ], 
 crop_dmg_events <- head(econ_loss[order(econ_loss$crop_dmg, decreasing = T), ], 10)
 
 
-## ------------------------------------------------------------------------
 prop_dmg_events[, c("EVTYPE", "prop_dmg")]
-
-
-## ------------------------------------------------------------------------
 crop_dmg_events[, c("EVTYPE", "crop_dmg")]
 
-
-## ------------------------------------------------------------------------
-library(ggplot2)
-library(gridExtra)
 # Set the levels in order
 p1 <- ggplot(data=fatal_events,
              aes(x=reorder(EVTYPE, fatalities), y=fatalities, fill=fatalities)) +
@@ -102,11 +115,11 @@ p2 <- ggplot(data=injury_events,
     ylab("Total number of injuries") +
     xlab("Event type") +
     theme(legend.position="none")
+	
+grid.arrange(p1, p2 , ncol=1, nrow=2, top = "Top deadly weather events in the US (1950-2011)")
 
-grid.arrange(p1, p2, main="Top deadly weather events in the US (1950-2011)")
 
 
-## ------------------------------------------------------------------------
 library(ggplot2)
 library(gridExtra)
 # Set the levels in order
@@ -125,7 +138,15 @@ p2 <- ggplot(data=crop_dmg_events,
     xlab("Event type") +
     ylab("Crop damage in dollars") + 
     theme(legend.position="none")
+	
+grid.arrange(p1, p2 , ncol=1, nrow=2, top = "Weather costs to the US economy (1950-2011)")
+	
+#print(xtable(data.frame(fatal_events), caption="Storm Events ranked by Injuries Caused"), type="html")
 
-grid.arrange(p1, p2, main="Weather costs to the US economy (1950-2011)")
+
+
+
+
+
 
 
