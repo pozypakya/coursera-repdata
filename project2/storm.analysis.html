@@ -77,15 +77,15 @@ img {
 <ul>
 <li>The data is from a compression types of comma-separated-value file available <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2">here</a>.</li>
 <li>The data is downloaded , extracted to the folder and read via CSV reader.</li>
-<li>Some of the data also converted into lower case , converted into dataframe via ddplay , combine via plyr and Preview</li>
-<li>New basic function introduced to convert into exponential transformation</li>
-</ul>
-</div>
-<div id="basic-command-line-using-knitr-manual" class="section level1">
-<h1>Basic command line using KnitR ( manual )</h1>
-<p>library(markdown) library(knitr) setwd(“D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2”) knitr::opts_chunk$set(echo=FALSE, fig.path=‘D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2/figure/’, cache=TRUE) knitr::knit2html(“storm.analysis.Rmd”, options=c(“use_xhtml”,“smartypants”,“mathjax”,“highlight_code”, “base64_images”))</p>
-<ul>
-<li>Load all the required library</li>
+<li>Some of the data also converted into lower case , converted into dataframe via ddplay , combine via plyr and data preview .</li>
+<li><p>New basic function introduced to convert into exponential transformation</p></li>
+<li><p>Basic command line using KnitR ( manual )</p>
+<pre class="r"><code>library(markdown)
+library(knitr)
+setwd(&quot;D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2&quot;)
+knitr::opts_chunk$set(echo=FALSE, fig.path='D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2/figure/', cache=TRUE)
+knitr::knit2html(&quot;storm.analysis.Rmd&quot;, options=c(&quot;use_xhtml&quot;,&quot;smartypants&quot;,&quot;mathjax&quot;,&quot;highlight_code&quot;, &quot;base64_images&quot;))</code></pre></li>
+<li><p>Load all the required library</p></li>
 </ul>
 <pre class="r"><code>options( warn = -1 )
 is.installed &lt;- function(mypkg) is.element(mypkg, installed.packages()[,1]) 
@@ -144,8 +144,11 @@ casualties &lt;- ddply(storm, .(EVTYPE), summarize,
 <li>Find events which causing most injury and death</li>
 </ul>
 <pre class="r"><code>fatal_events &lt;- head(casualties[order(casualties$fatalities, decreasing = T), ], 10)
-injury_events &lt;- head(casualties[order(casualties$injuries, decreasing = T), ], 10)
-fatal_events[, c(&quot;EVTYPE&quot;, &quot;fatalities&quot;)]</code></pre>
+injury_events &lt;- head(casualties[order(casualties$injuries, decreasing = T), ], 10)</code></pre>
+<ul>
+<li>Top 10 Fatal Events List</li>
+</ul>
+<pre class="r"><code>fatal_events[, c(&quot;EVTYPE&quot;, &quot;fatalities&quot;)]</code></pre>
 <pre><code>##             EVTYPE fatalities
 ## 834        TORNADO       5633
 ## 130 EXCESSIVE HEAT       1903
@@ -157,6 +160,9 @@ fatal_events[, c(&quot;EVTYPE&quot;, &quot;fatalities&quot;)]</code></pre>
 ## 585    RIP CURRENT        368
 ## 359      HIGH WIND        248
 ## 19       AVALANCHE        224</code></pre>
+<ul>
+<li>Top 10 Injury Events List</li>
+</ul>
 <pre class="r"><code>injury_events[, c(&quot;EVTYPE&quot;, &quot;injuries&quot;)]</code></pre>
 <pre><code>##                EVTYPE injuries
 ## 834           TORNADO    91346
@@ -207,8 +213,11 @@ econ_loss &lt;- ddply(storm, .(EVTYPE), summarize,
 </ul>
 <pre class="r"><code>econ_loss &lt;- econ_loss[(econ_loss$prop_dmg &gt; 0 | econ_loss$crop_dmg &gt; 0), ]
 prop_dmg_events &lt;- head(econ_loss[order(econ_loss$prop_dmg, decreasing = T), ], 10)
-crop_dmg_events &lt;- head(econ_loss[order(econ_loss$crop_dmg, decreasing = T), ], 10)
-prop_dmg_events[, c(&quot;EVTYPE&quot;, &quot;prop_dmg&quot;)]</code></pre>
+crop_dmg_events &lt;- head(econ_loss[order(econ_loss$crop_dmg, decreasing = T), ], 10)</code></pre>
+<ul>
+<li>Top 10 Property damage List</li>
+</ul>
+<pre class="r"><code>prop_dmg_events[, c(&quot;EVTYPE&quot;, &quot;prop_dmg&quot;)]</code></pre>
 <pre><code>##                 EVTYPE     prop_dmg
 ## 153        FLASH FLOOD 6.820237e+13
 ## 786 THUNDERSTORM WINDS 2.086532e+13
@@ -220,6 +229,9 @@ prop_dmg_events[, c(&quot;EVTYPE&quot;, &quot;prop_dmg&quot;)]</code></pre>
 ## 185           FLOODING 5.920825e+10
 ## 670        STORM SURGE 4.332354e+10
 ## 310         HEAVY SNOW 1.793259e+10</code></pre>
+<ul>
+<li>Top 10 Crop damage List</li>
+</ul>
 <pre class="r"><code>crop_dmg_events[, c(&quot;EVTYPE&quot;, &quot;crop_dmg&quot;)]</code></pre>
 <pre><code>##                EVTYPE    crop_dmg
 ## 95            DROUGHT 13972566000

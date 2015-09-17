@@ -21,16 +21,18 @@ Data Processing
 * The data is from a compression types of comma-separated-value file available
 [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2).
 * The data is downloaded , extracted to the folder and read via CSV reader.
-* Some of the data also converted into lower case , converted into dataframe via ddplay , combine via plyr and Preview
+* Some of the data also converted into lower case , converted into dataframe via ddplay , combine via plyr and data preview .
 * New basic function introduced to convert into exponential transformation
 
 
-# Basic command line using KnitR ( manual )
+* Basic command line using KnitR ( manual )
+```r
 library(markdown)
 library(knitr)
 setwd("D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2")
 knitr::opts_chunk$set(echo=FALSE, fig.path='D:/Google Drive/Coursera/Assignment 5.1/R/coursera-repdata/project2/figure/', cache=TRUE)
 knitr::knit2html("storm.analysis.Rmd", options=c("use_xhtml","smartypants","mathjax","highlight_code", "base64_images"))
+```
 
 
 * Load all the required library
@@ -101,12 +103,20 @@ casualties <- ddply(storm, .(EVTYPE), summarize,
                     injuries = sum(INJURIES))
 ```
 
-* Find events which causing most injury and death
+* Find events which causing most injury and death 
 
 ```{r}
 fatal_events <- head(casualties[order(casualties$fatalities, decreasing = T), ], 10)
 injury_events <- head(casualties[order(casualties$injuries, decreasing = T), ], 10)
+```
+
+* Top 10 Fatal Events List
+```{r}
 fatal_events[, c("EVTYPE", "fatalities")]
+```
+
+* Top 10 Injury Events List
+```{r}
 injury_events[, c("EVTYPE", "injuries")]
 ```
 
@@ -156,9 +166,19 @@ econ_loss <- ddply(storm, .(EVTYPE), summarize,
 econ_loss <- econ_loss[(econ_loss$prop_dmg > 0 | econ_loss$crop_dmg > 0), ]
 prop_dmg_events <- head(econ_loss[order(econ_loss$prop_dmg, decreasing = T), ], 10)
 crop_dmg_events <- head(econ_loss[order(econ_loss$crop_dmg, decreasing = T), ], 10)
+```
+
+
+* Top 10 Property damage List
+```{r}
 prop_dmg_events[, c("EVTYPE", "prop_dmg")]
+```
+
+* Top 10 Crop damage List
+```{r}
 crop_dmg_events[, c("EVTYPE", "crop_dmg")]
 ```
+
 
 Results
 ===============
