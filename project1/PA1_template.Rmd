@@ -16,19 +16,6 @@ if (is.installed('knitr') == 'FALSE') {install.packages("knitr")} else{library(k
 if (is.installed('lattice') == 'FALSE') {install.packages("lattice")} else{library(lattice)}
 if (is.installed('RCurl') == 'FALSE') {install.packages("RCurl")} else{library(RCurl)}
 ```
-```r
-is.installed <- function(mypkg) is.element(mypkg, installed.packages()[,1]) 
-if (is.installed('dplyr') == 'FALSE') {install.packages("dplyr")} else{library(dplyr)}
-if (is.installed('ggthemes') == 'FALSE') {install.packages("ggthemes")} else{library(ggthemes)}
-if (is.installed('scales') == 'FALSE') {install.packages("scales")} else{library(scales)}
-if (is.installed('RColorBrewer') == 'FALSE') {install.packages("RColorBrewer")} else{library(RColorBrewer)}
-if (is.installed('lubridate') == 'FALSE') {install.packages("lubridate")} else{library(lubridate)}
-if (is.installed('ggplot2') == 'FALSE') {install.packages("ggplot2")} else{library(ggplot2)}
-if (is.installed('plyr') == 'FALSE') {install.packages("plyr")} else{library(plyr)}
-if (is.installed('knitr') == 'FALSE') {install.packages("knitr")} else{library(knitr)}
-if (is.installed('lattice') == 'FALSE') {install.packages("lattice")} else{library(lattice)}
-if (is.installed('RCurl') == 'FALSE') {install.packages("RCurl")} else{library(RCurl)}
-```
 
 * Load the data (i.e. read.csv())
 * Process/transform the data (if necessary) into a format suitable for your analysis
