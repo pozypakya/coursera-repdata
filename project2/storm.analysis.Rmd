@@ -1,3 +1,6 @@
+---
+output: word_document
+---
 # Reproducible Research: Peer Assessment 2
 
 Health and Economic Impact of Weather Events in the US
